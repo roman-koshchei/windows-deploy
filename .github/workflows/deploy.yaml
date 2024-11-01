@@ -1,0 +1,59 @@
+name: Build and Deploy C# Website
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "6.0.x"
+
+      - name: Restore Dependencies
+        run: dotnet restore
+
+      - name: Build
+        run: dotnet build --configuration Release
+
+      - name: Publish
+        run: dotnet publish --configuration Release --output ./publish
+
+      - name: Setup SSH
+        env:
+          PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          HOST: ${{ secrets.SSH_HOST }}
+        run: |
+          # Start SSH agent
+          eval "$(ssh-agent -s)"
+          mkdir -p ~/.ssh
+
+          # Add private key
+          echo "$PRIVATE_KEY" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+
+          # Add host
+          ssh-keyscan -H $HOST >> ~/.ssh/known_hosts
+
+      - name: Deploy to Windows server
+        env:
+          USERNAME: ${{ secrets.SSH_USER }}
+          HOST: ${{ secrets.SSH_HOST }}
+          DEPLOY_PATH: 'C:\inetpub\wwwroot\Site'
+        run: |
+          # Stop site
+          ssh "$USERNAME@$HOST" "powershell -Command Stop-WebSite -Name 'Site'"
+
+          # Copy output
+          scp -r ./publish/* "$USERNAME@$HOST:$DEPLOY_PATH"
+
+          # Restart website
+          ssh "$USERNAME@$HOST" "powershell -Command Start-WebSite -Name 'Site'"
