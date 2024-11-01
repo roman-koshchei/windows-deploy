@@ -25,7 +25,7 @@ jobs:
         run: dotnet build --configuration Release
 
       - name: Publish
-        run: dotnet publish --configuration Release --output ./publish
+        run: dotnet publish ./src/Site/Site.csproj --configuration Release --output ./publish
 
       - name: Setup SSH
         env:
