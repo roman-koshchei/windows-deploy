@@ -28,7 +28,9 @@ jobs:
         run: dotnet publish ./src/Site/Site.csproj --configuration Release --output ./publish
 
       - name: Install rsync
-        run: sudo apt-get update && sudo apt-get install -y rsync
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y rsync
 
       - name: Setup SSH
         env:
