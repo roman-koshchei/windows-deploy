@@ -43,7 +43,7 @@ jobs:
           # Add host
           ssh-keyscan -H $HOST >> ~/.ssh/known_hosts
 
-      - name: Deploy to Windows server
+      - name: Stop site to Windows server
         env:
           USERNAME: ${{ secrets.SSH_USER }}
           HOST: ${{ secrets.SSH_HOST }}
@@ -56,7 +56,24 @@ jobs:
           # ssh "$USERNAME@$HOST" "powershell.exe -Command 'Remove-Item -Path \"$REMOTE_PATH\*\" -Recurse -Force'"
 
           # Copy output
-          scp -C -v -o ServerAliveInterval=120 -r ./publish/* "$USERNAME@$HOST:$DEPLOY_PATH"
+          # scp -C -v -o "ServerAliveInterval=60" -o "ServerAliveCountMax=5" -r ./publish/* "$USERNAME@$HOST:$DEPLOY_PATH"
 
+          # Restart website
+          # ssh "$USERNAME@$HOST" "powershell -Command Start-WebSite -Name 'Site'"
+
+      - name: Copy to Windows server
+        uses: appleboy/scp-action@v0.1.4
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          source: "./publish/*"
+          target: "C:/inetpub/wwwroot/Site"
+
+      - name: Start site
+        env:
+          USERNAME: ${{ secrets.SSH_USER }}
+          HOST: ${{ secrets.SSH_HOST }}
+        run: |
           # Restart website
           ssh "$USERNAME@$HOST" "powershell -Command Start-WebSite -Name 'Site'"
