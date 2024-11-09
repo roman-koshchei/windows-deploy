@@ -67,7 +67,7 @@ jobs:
           HOST: ${{ secrets.SSH_HOST }}
           DEPLOY_PATH: "C:/inetpub/wwwroot/Site"
         run: |
-          scp -v -r ./publish/* "$USERNAME@$HOST:$DEPLOY_PATH"
+          scp -vvv -r ./publish/* "$USERNAME@$HOST:$DEPLOY_PATH"
 
       - name: Start site
         env:
