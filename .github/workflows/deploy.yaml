@@ -51,4 +51,5 @@ jobs:
           ssh "$USERNAME@$HOST" "powershell -Command Stop-WebSite -Name 'Site'"
 
           scp -C -o ServerAliveInterval=60 -r ./publish/* "$USERNAME@$HOST:'C:/inetpub/wwwroot/Site'"
+
           ssh "$USERNAME@$HOST" "powershell -Command Start-WebSite -Name 'Site'"
