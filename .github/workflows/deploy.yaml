@@ -47,7 +47,6 @@ jobs:
         env:
           USERNAME: ${{ secrets.SSH_USER }}
           HOST: ${{ secrets.SSH_HOST }}
-          DEPLOY_PATH: "C:/inetpub/wwwroot/Site"
         run: |
           # Stop site
           ssh "$USERNAME@$HOST" "powershell -Command Stop-WebSite -Name 'Site'"
@@ -56,7 +55,7 @@ jobs:
         env:
           USERNAME: ${{ secrets.SSH_USER }}
           HOST: ${{ secrets.SSH_HOST }}
-          DEPLOY_PATH: "C:\\inetpub\\wwwroot\\Site"
+          DEPLOY_PATH: "C:\inetpub\wwwroot\Site"
         run: |
           scp -C -v -o ServerAliveInterval=60 -r ./publish/* "$USERNAME@$HOST:$DEPLOY_PATH"
 
