@@ -68,7 +68,7 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           source: "./publish/*"
-          target: "C:/inetpub/wwwroot/Site/"
+          target: "/c/inetpub/wwwroot/Site/"
           overwrite: true
           rm: true
 
