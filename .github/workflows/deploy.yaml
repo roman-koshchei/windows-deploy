@@ -47,7 +47,7 @@ jobs:
         env:
           USERNAME: ${{ secrets.SSH_USER }}
           HOST: ${{ secrets.SSH_HOST }}
-          DEPLOY_PATH: 'C:\inetpub\wwwroot\Site'
+          DEPLOY_PATH: 'C:\inetpub\wwwroot\Site2'
         run: |
           # Stop site
           ssh "$USERNAME@$HOST" "powershell -Command Stop-WebSite -Name 'Site'"
@@ -56,7 +56,7 @@ jobs:
           ssh "$USERNAME@$HOST" "powershell.exe -Command 'Remove-Item -Path \"$REMOTE_PATH\*\" -Recurse -Force'"
 
           # Copy output
-          scp -C -v -o ServerAliveInterval=60 -r ./publish/* "$USERNAME@$HOST:$DEPLOY_PATH"
+          scp -C -v -o ServerAliveInterval=120 -r ./publish/* "$USERNAME@$HOST:$DEPLOY_PATH"
 
           # Restart website
           ssh "$USERNAME@$HOST" "powershell -Command Start-WebSite -Name 'Site'"
