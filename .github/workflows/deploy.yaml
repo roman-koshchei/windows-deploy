@@ -69,7 +69,7 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           source: "./publish/*"
           target: "/c/inetpub/wwwroot/Site/"
-          overwrite: true
+          tar_dereference: true
           rm: true
 
       - name: Start site
