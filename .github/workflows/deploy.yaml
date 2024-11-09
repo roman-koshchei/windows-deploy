@@ -27,11 +27,6 @@ jobs:
       - name: Publish
         run: dotnet publish ./src/Site/Site.csproj --configuration Release --output ./publish
 
-      - name: Zip Files
-        run: |
-          # Create a zip file of the publish directory
-          zip -r publish.zip ./publish
-
       - name: Setup SSH
         env:
           PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
@@ -57,26 +52,13 @@ jobs:
           # Stop site
           ssh "$USERNAME@$HOST" "powershell -Command Stop-WebSite -Name 'Site'"
 
-      - name: Copy Zip File to Windows Server
+      - name: Copy File to Windows Server
         env:
           USERNAME: ${{ secrets.SSH_USER }}
           HOST: ${{ secrets.SSH_HOST }}
-          DEPLOY_PATH: "C:/inetpub/wwwroot/Site"
+          DEPLOY_PATH: "C:\\inetpub\\wwwroot\\Site"
         run: |
-          scp -v -o "ServerAliveInterval=10" ./publish.zip "$USERNAME@$HOST:$DEPLOY_PATH"
-
-      - name: Unzip on Windows Server and Deploy
-        env:
-          USERNAME: ${{ secrets.SSH_USER }}
-          HOST: ${{ secrets.SSH_HOST }}
-          DEPLOY_PATH: "C:/inetpub/wwwroot/Site"
-        run: |
-          ssh "$USERNAME@$HOST" "
-            # Unzip the file on the server
-            powershell -Command Expand-Archive -Path '$DEPLOY_PATH\\publish.zip' -DestinationPath '$DEPLOY_PATH' -Force
-            # Optionally remove the zip file after extraction
-            Remove-Item -Path '$DEPLOY_PATH\\publish.zip'
-          "
+          scp -C -v -o ServerAliveInterval=60 -r ./publish/* "$USERNAME@$HOST:$DEPLOY_PATH"
 
       - name: Start site
         env:
