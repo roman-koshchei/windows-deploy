@@ -62,15 +62,12 @@ jobs:
           # ssh "$USERNAME@$HOST" "powershell -Command Start-WebSite -Name 'Site'"
 
       - name: Copy to Windows server
-        uses: appleboy/scp-action@v0.1.4
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USER }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          source: "./publish/*"
-          target: "/c/inetpub/wwwroot/Site/"
-          tar_dereference: true
-          rm: true
+        env:
+          USERNAME: ${{ secrets.SSH_USER }}
+          HOST: ${{ secrets.SSH_HOST }}
+          DEPLOY_PATH: "C:/inetpub/wwwroot/Site"
+        run: |
+          scp -C -v -o "ServerAliveInterval=60" -r ./publish/* "$USERNAME@$HOST:$DEPLOY_PATH"
 
       - name: Start site
         env:
