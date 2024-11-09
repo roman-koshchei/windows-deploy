@@ -50,7 +50,7 @@ jobs:
         run: |
           ssh "$USERNAME@$HOST" "powershell -Command Stop-WebSite -Name 'Site'"
 
-          ssh "$USERNAME@$HOST" "rm -rf 'C:/inetpub/wwwroot/Site/*'"
+          # ssh "$USERNAME@$HOST" "rm -rf 'C:/inetpub/wwwroot/Site/*'"
 
           scp -C -o ServerAliveInterval=60 -r ./publish/* "$USERNAME@$HOST:'C:/inetpub/wwwroot/Site'"
 
