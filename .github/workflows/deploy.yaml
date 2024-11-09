@@ -52,6 +52,9 @@ jobs:
           # Stop site
           ssh "$USERNAME@$HOST" "powershell -Command Stop-WebSite -Name 'Site'"
 
+          # Delete old site
+          ssh "$USERNAME@$HOST" "powershell.exe -Command 'Remove-Item -Path \"$REMOTE_PATH\*\" -Recurse -Force'"
+
           # Copy output
           scp -C -v -o ServerAliveInterval=60 -r ./publish/* "$USERNAME@$HOST:$DEPLOY_PATH"
 
