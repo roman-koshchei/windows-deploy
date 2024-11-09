@@ -27,10 +27,10 @@ jobs:
       - name: Publish
         run: dotnet publish ./src/Site/Site.csproj --configuration Release --output ./publish
 
-      - name: Install rsync
+      - name: Zip Files
         run: |
-          sudo apt-get update
-          sudo apt-get install -y rsync
+          # Create a zip file of the publish directory
+          zip -r publish.zip ./publish
 
       - name: Setup SSH
         env:
@@ -48,12 +48,6 @@ jobs:
           # Add host
           ssh-keyscan -H $HOST >> ~/.ssh/known_hosts
 
-      - name: Test SSH Connection
-        env:
-          USERNAME: ${{ secrets.SSH_USER }}
-          HOST: ${{ secrets.SSH_HOST }}
-        run: ssh "$USERNAME@$HOST" "echo Connection successful"
-
       - name: Stop site to Windows server
         env:
           USERNAME: ${{ secrets.SSH_USER }}
@@ -63,22 +57,26 @@ jobs:
           # Stop site
           ssh "$USERNAME@$HOST" "powershell -Command Stop-WebSite -Name 'Site'"
 
-          # Delete old site
-          # ssh "$USERNAME@$HOST" "powershell.exe -Command 'Remove-Item -Path \"$REMOTE_PATH\*\" -Recurse -Force'"
-
-          # Copy output
-          # scp -C -v -o "ServerAliveInterval=60" -o "ServerAliveCountMax=5" -r ./publish/* "$USERNAME@$HOST:$DEPLOY_PATH"
-
-          # Restart website
-          # ssh "$USERNAME@$HOST" "powershell -Command Start-WebSite -Name 'Site'"
-
-      - name: Deploy to Windows Server with rsync
+      - name: Copy Zip File to Windows Server
         env:
           USERNAME: ${{ secrets.SSH_USER }}
           HOST: ${{ secrets.SSH_HOST }}
-          DEPLOY_PATH: "/c/inetpub/wwwroot/Site" # or "C$/inetpub/wwwroot/Site"
+          DEPLOY_PATH: "C:/inetpub/wwwroot/Site"
         run: |
-          rsync -avz -e "ssh -o StrictHostKeyChecking=no" ./publish/ "$USERNAME@$HOST:$DEPLOY_PATH"
+          scp -v ./publish.zip "$USERNAME@$HOST:$DEPLOY_PATH"
+
+      - name: Unzip on Windows Server and Deploy
+        env:
+          USERNAME: ${{ secrets.SSH_USER }}
+          HOST: ${{ secrets.SSH_HOST }}
+          DEPLOY_PATH: "C:/inetpub/wwwroot/Site"
+        run: |
+          ssh "$USERNAME@$HOST" "
+            # Unzip the file on the server
+            powershell -Command Expand-Archive -Path '$DEPLOY_PATH\\publish.zip' -DestinationPath '$DEPLOY_PATH' -Force
+            # Optionally remove the zip file after extraction
+            Remove-Item -Path '$DEPLOY_PATH\\publish.zip'
+          "
 
       - name: Start site
         env:
