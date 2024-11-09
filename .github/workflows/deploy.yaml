@@ -43,26 +43,14 @@ jobs:
           # Add host
           ssh-keyscan -H $HOST >> ~/.ssh/known_hosts
 
-      - name: Stop site to Windows server
-        env:
-          USERNAME: ${{ secrets.SSH_USER }}
-          HOST: ${{ secrets.SSH_HOST }}
-        run: |
-          # Stop site
-          ssh "$USERNAME@$HOST" "powershell -Command Stop-WebSite -Name 'Site'"
-
-      - name: Copy File to Windows Server
+      - name: T Windows server
         env:
           USERNAME: ${{ secrets.SSH_USER }}
           HOST: ${{ secrets.SSH_HOST }}
           DEPLOY_PATH: 'C:\inetpub\wwwroot\Site'
         run: |
+          ssh "$USERNAME@$HOST" "powershell -Command Stop-WebSite -Name 'Site'"
+
           scp -C -v -o ServerAliveInterval=60 -r ./publish/* "$USERNAME@$HOST:$DEPLOY_PATH"
 
-      - name: Start site
-        env:
-          USERNAME: ${{ secrets.SSH_USER }}
-          HOST: ${{ secrets.SSH_HOST }}
-        run: |
-          # Restart website
           ssh "$USERNAME@$HOST" "powershell -Command Start-WebSite -Name 'Site'"
