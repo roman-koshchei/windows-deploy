@@ -53,7 +53,7 @@ jobs:
           ssh "$USERNAME@$HOST" "powershell -Command Stop-WebSite -Name 'Site'"
 
           # Copy output
-          scp -r ./publish/* "$USERNAME@$HOST:$DEPLOY_PATH"
+          scp -v -r ./publish/* "$USERNAME@$HOST:$DEPLOY_PATH"
 
           # Restart website
           ssh "$USERNAME@$HOST" "powershell -Command Start-WebSite -Name 'Site'"
