@@ -63,7 +63,7 @@ jobs:
           HOST: ${{ secrets.SSH_HOST }}
           DEPLOY_PATH: "C:/inetpub/wwwroot/Site"
         run: |
-          scp -v -o "ServerAliveInterval=60" ./publish.zip "$USERNAME@$HOST:$DEPLOY_PATH"
+          scp -v -o "ServerAliveInterval=10" ./publish.zip "$USERNAME@$HOST:$DEPLOY_PATH"
 
       - name: Unzip on Windows Server and Deploy
         env:
