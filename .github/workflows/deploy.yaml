@@ -11,7 +11,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     outputs:
-      publish-path: ${{ steps.publish.outputs.publish-path }}
+      publish-path: ${{ github.workspace }}/publish
 
     steps:
       - name: Checkout Code
@@ -29,7 +29,6 @@ jobs:
         run: dotnet build --configuration Release
 
       - name: Publish
-        id: publish
         run: |
           dotnet publish \
             ./src/Site/Site.csproj \
@@ -68,7 +67,7 @@ jobs:
 
           scp -l 2000 -C \
             -o ServerAliveInterval=60 \
-            -r ${{ github.workspace }}/publish/* \
+            -r ${{ needs.build.outputs.publish-path }}/* \
             "$USERNAME@$HOST:'C:/inetpub/wwwroot/Site'"
 
           ssh "$USERNAME@$HOST" "powershell -Command Start-WebSite -Name 'Site'"
