@@ -17,7 +17,7 @@ jobs:
         with:
           name: site-publish
           path: ./publish
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          run-id: ${{ github.event.workflow_run.id }}
 
       - name: Setup SSH
         env:
