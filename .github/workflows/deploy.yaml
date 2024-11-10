@@ -1,45 +1,22 @@
-name: Build and Deploy C# Website
+name: Deploy Website to Windows Server
 
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - "src/**"
+  workflow_run:
+    workflows: ["Build Website"]
+    types:
+      - completed
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    outputs:
-      publish-path: ${{ github.workspace }}/publish
-
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
-
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: "6.0.x"
-
-      - name: Restore Dependencies
-        run: dotnet restore
-
-      - name: Build
-        run: dotnet build --configuration Release
-
-      - name: Publish
-        run: |
-          dotnet publish \
-            ./src/Site/Site.csproj \
-            --configuration Release \
-            --output ${{ github.workspace }}/publish
-
   deploy:
     runs-on: ubuntu-latest
-    needs: build
 
     steps:
+      - name: Download Artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: site-publish
+          path: ./publish
+
       - name: Setup SSH
         env:
           PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
@@ -67,7 +44,7 @@ jobs:
 
           scp -l 2000 -C \
             -o ServerAliveInterval=60 \
-            -r ${{ needs.build.outputs.publish-path }}/* \
+            -r ./publish/* \
             "$USERNAME@$HOST:'C:/inetpub/wwwroot/Site'"
 
           ssh "$USERNAME@$HOST" "powershell -Command Start-WebSite -Name 'Site'"

@@ -1,0 +1,40 @@
+name: Build Website
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "src/**"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "6.0.x"
+
+      - name: Restore Dependencies
+        run: dotnet restore
+
+      - name: Build
+        run: dotnet build --configuration Release
+
+      - name: Publish
+        run: |
+          dotnet publish \
+            ./src/Site/Site.csproj \
+            --configuration Release \
+            --output ./publish
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: site-publish
+          path: ./publish
