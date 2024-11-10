@@ -1,10 +1,11 @@
-name: Deploy Website to Windows Server
+name: Deploy Website
 
 on:
   workflow_run:
     workflows: ["Build Website"]
     types:
       - completed
+  workflow_dispatch:
 
 jobs:
   deploy:
@@ -12,7 +13,7 @@ jobs:
 
     steps:
       - name: Download Artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: site-publish
           path: ./publish
