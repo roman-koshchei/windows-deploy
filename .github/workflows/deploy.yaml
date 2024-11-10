@@ -10,6 +10,7 @@ on:
       run-id:
         description: "Run ID of the latest build workflow"
         required: true
+        type: number
 
 jobs:
   deploy:
