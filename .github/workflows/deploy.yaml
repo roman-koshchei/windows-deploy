@@ -18,23 +18,12 @@ jobs:
       actions: read
 
     steps:
-      - name: Determine Run ID
-        id: determine_run_id
-        run: |
-          if [[ "${{ github.event_name }}" == "workflow_run" ]]; then
-            echo "Run ID from workflow_run: ${{ github.event.workflow_run.id }}"
-            echo "::set-output name=run_id::${{ github.event.workflow_run.id }}"
-          else
-            echo "Run ID from workflow_dispatch: ${{ github.event.inputs.run-id }}"
-            echo "::set-output name=run_id::${{ github.event.inputs.run-id }}"
-          fi
-
       - name: Download Artifacts
         uses: actions/download-artifact@v4
         with:
           name: site-publish
           path: ./publish
-          run-id: ${{ steps.determine_run_id.outputs.run_id }}
+          run-id: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.id || github.event.inputs.run-id }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Setup SSH
