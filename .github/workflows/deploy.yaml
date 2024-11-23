@@ -49,12 +49,13 @@ jobs:
           USERNAME: ${{ secrets.SSH_USER }}
           HOST: ${{ secrets.SSH_HOST }}
         run: |
-          ssh "$USERNAME@$HOST" "powershell -Command Stop-WebSite -Name 'Site'"
+          scp -C \
+            -r ./publish/* \
+            "$USERNAME@$HOST:'C:/inetpub/wwwroot/SiteGreen'"
+
+          ssh "$USERNAME@$HOST" "powershell -Command \"Stop-WebSite -Name 'Site'; Set-ItemProperty 'IIS:\\Sites\\Site' -name physicalPath -value 'C:\\inetpub\\wwwroot\\SiteGreen'; Start-WebSite -Name 'Site'\""
 
           # ssh "$USERNAME@$HOST" "rm -rf 'C:/inetpub/wwwroot/Site/*'"
 
-          scp -C \
-            -r ./publish/* \
-            "$USERNAME@$HOST:'C:/inetpub/wwwroot/Site'"
 
-          ssh "$USERNAME@$HOST" "powershell -Command Start-WebSite -Name 'Site'"
+          # ssh "$USERNAME@$HOST" "powershell -Command Start-WebSite -Name 'Site'"
