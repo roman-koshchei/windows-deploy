@@ -48,9 +48,8 @@ jobs:
         env:
           USERNAME: ${{ secrets.SSH_USER }}
           HOST: ${{ secrets.SSH_HOST }}
+          NEW_WEBSITE_FOLDER: "C:/inetpub/wwwroot/Site/${{ github.run_id }}-${{ github.run_attempt }}"
         run: |
-          NEW_WEBSITE_FOLDER="C:/inetpub/wwwroot/SiteBlue"
-
           ssh "$USERNAME@$HOST" "powershell -Command \"
             if (-not (Test-Path -Path '$NEW_WEBSITE_FOLDER')) { 
               New-Item -Path '$NEW_WEBSITE_FOLDER' -ItemType Directory; 
@@ -61,9 +60,8 @@ jobs:
             -r ./publish/* \
             "$USERNAME@$HOST:'$NEW_WEBSITE_FOLDER'"
 
-          ssh "$USERNAME@$HOST" "powershell -Command \"Stop-WebSite -Name 'Site'; Set-ItemProperty 'IIS:\\Sites\\Site' -name physicalPath -value '$NEW_WEBSITE_FOLDER'; Start-WebSite -Name 'Site'\""
-
-          # ssh "$USERNAME@$HOST" "rm -rf 'C:/inetpub/wwwroot/Site/*'"
-
-
-          # ssh "$USERNAME@$HOST" "powershell -Command Start-WebSite -Name 'Site'"
+          ssh "$USERNAME@$HOST" "powershell -Command \"
+            Stop-WebSite -Name 'Site'; 
+            Set-ItemProperty 'IIS:\\Sites\\Site' -name physicalPath -value '$NEW_WEBSITE_FOLDER'; 
+            Start-WebSite -Name 'Site'
+          \""
