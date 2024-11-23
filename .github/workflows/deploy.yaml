@@ -68,5 +68,8 @@ jobs:
             Stop-WebSite -Name 'Site'; 
             Set-ItemProperty 'IIS:\\Sites\\Site' -name physicalPath -value '$WEBSITE_FOLDER_WIN'; 
             Start-WebSite -Name 'Site';
-            Get-ChildItem -Path $WEBSITE_PARENT_FOLDER_WIN -Directory | Where-Object { $_.Name -ne $WEBSITE_VERSION } | Remove-Item -Recurse -Force
+
+            $directories = Get-ChildItem -Path $WEBSITE_PARENT_FOLDER_WIN-Directory | Sort-Object CreationTime -Descending
+            $latestDirectories = $directories | Select-Object -First 2
+            $directories | Where-Object { $_ -notin $latestDirectories } | Remove-Item -Recurse -Force
           \""
