@@ -49,6 +49,7 @@ jobs:
           USERNAME: ${{ secrets.SSH_USER }}
           HOST: ${{ secrets.SSH_HOST }}
           NEW_WEBSITE_FOLDER: "C:/inetpub/wwwroot/Site/Id${{ github.run_id }}Attempt${{ github.run_attempt }}"
+          NEW_WEBSITE_FOLDER_WIN: "C:\\inetpub\\wwwroot\\Site\\Id${{ github.run_id }}Attempt${{ github.run_attempt }}"
         run: |
           ssh "$USERNAME@$HOST" "powershell -Command \"
             if (-not (Test-Path -Path '$NEW_WEBSITE_FOLDER')) { 
@@ -61,7 +62,7 @@ jobs:
             "$USERNAME@$HOST:'$NEW_WEBSITE_FOLDER'"
 
           ssh "$USERNAME@$HOST" "powershell -Command \"
+            Set-ItemProperty 'IIS:\\Sites\\Site' -name physicalPath -value '$NEW_WEBSITE_FOLDER_WIN'; 
             Stop-WebSite -Name 'Site'; 
-            Set-ItemProperty 'IIS:\\Sites\\Site' -name physicalPath -value '$NEW_WEBSITE_FOLDER'; 
-            Start-WebSite -Name 'Site'
+            Start-WebSite -Name 'Site';
           \""
