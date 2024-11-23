@@ -49,9 +49,10 @@ jobs:
           USERNAME: ${{ secrets.SSH_USER }}
           HOST: ${{ secrets.SSH_HOST }}
           WEBSITE_VERSION: "Id${{ github.run_id }}Attempt${{ github.run_attempt }}"
-          WEBSITE_FOLDER: "C:/inetpub/wwwroot/Site/${{ env.WEBSITE_VERSION }}"
-          WEBSITE_FOLDER_WIN: "C:\\inetpub\\wwwroot\\Site\\${{ env.WEBSITE_VERSION }}"
         run: |
+          WEBSITE_FOLDER="C:/inetpub/wwwroot/Site/$WEBSITE_VERSION"
+          WEBSITE_FOLDER_WIN="C:\\inetpub\\wwwroot\\Site\\$WEBSITE_VERSION"
+
           ssh "$USERNAME@$HOST" "powershell -Command \"
             if (-not (Test-Path -Path '$WEBSITE_FOLDER_WIN')) { 
               New-Item -Path '$WEBSITE_FOLDER_WIN' -ItemType Directory; 
