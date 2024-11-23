@@ -53,8 +53,7 @@ jobs:
 
           # ssh "$USERNAME@$HOST" "rm -rf 'C:/inetpub/wwwroot/Site/*'"
 
-          scp -l 2000 -C \
-            -o ServerAliveInterval=60 \
+          scp -C \
             -r ./publish/* \
             "$USERNAME@$HOST:'C:/inetpub/wwwroot/Site'"
 
