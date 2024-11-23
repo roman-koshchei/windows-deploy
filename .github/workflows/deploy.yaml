@@ -51,6 +51,7 @@ jobs:
           WEBSITE_VERSION: "Id${{ github.run_id }}Attempt${{ github.run_attempt }}"
         run: |
           WEBSITE_FOLDER="C:/inetpub/wwwroot/Site/$WEBSITE_VERSION"
+          WEBSITE_PARENT_FOLDER_WIN="C:\\inetpub\\wwwroot\\Site\\"
           WEBSITE_FOLDER_WIN="C:\\inetpub\\wwwroot\\Site\\$WEBSITE_VERSION"
 
           ssh "$USERNAME@$HOST" "powershell -Command \"
@@ -67,4 +68,5 @@ jobs:
             Stop-WebSite -Name 'Site'; 
             Set-ItemProperty 'IIS:\\Sites\\Site' -name physicalPath -value '$WEBSITE_FOLDER_WIN'; 
             Start-WebSite -Name 'Site';
+            Get-ChildItem -Path $WEBSITE_PARENT_FOLDER_WIN -Directory | Where-Object { $_.Name -ne $WEBSITE_VERSION } | Remove-Item -Recurse -Force
           \""
