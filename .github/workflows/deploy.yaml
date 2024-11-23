@@ -48,7 +48,7 @@ jobs:
         env:
           USERNAME: ${{ secrets.SSH_USER }}
           HOST: ${{ secrets.SSH_HOST }}
-          NEW_WEBSITE_FOLDER: "C:/inetpub/wwwroot/Site/${{ github.run_id }}-${{ github.run_attempt }}"
+          NEW_WEBSITE_FOLDER: "C:/inetpub/wwwroot/Site/Id${{ github.run_id }}Attempt${{ github.run_attempt }}"
         run: |
           ssh "$USERNAME@$HOST" "powershell -Command \"
             if (-not (Test-Path -Path '$NEW_WEBSITE_FOLDER')) { 
