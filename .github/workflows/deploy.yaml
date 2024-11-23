@@ -53,17 +53,17 @@ jobs:
           WEBSITE_FOLDER_WIN: "C:\\inetpub\\wwwroot\\Site\\${{ env.WEBSITE_VERSION }}"
         run: |
           ssh "$USERNAME@$HOST" "powershell -Command \"
-            if (-not (Test-Path -Path '$NEW_WEBSITE_FOLDER_WIN')) { 
-              New-Item -Path '$NEW_WEBSITE_FOLDER_WIN' -ItemType Directory; 
+            if (-not (Test-Path -Path '$WEBSITE_FOLDER_WIN')) { 
+              New-Item -Path '$WEBSITE_FOLDER_WIN' -ItemType Directory; 
             };
           \""
 
           scp -C \
             -r ./publish/* \
-            "$USERNAME@$HOST:'$NEW_WEBSITE_FOLDER'"
+            "$USERNAME@$HOST:'$WEBSITE_FOLDER'"
 
           ssh "$USERNAME@$HOST" "powershell -Command \"
             Stop-WebSite -Name 'Site'; 
-            Set-ItemProperty 'IIS:\\Sites\\Site' -name physicalPath -value '$NEW_WEBSITE_FOLDER_WIN'; 
+            Set-ItemProperty 'IIS:\\Sites\\Site' -name physicalPath -value '$WEBSITE_FOLDER_WIN'; 
             Start-WebSite -Name 'Site';
           \""
