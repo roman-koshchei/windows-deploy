@@ -48,12 +48,13 @@ jobs:
         env:
           USERNAME: ${{ secrets.SSH_USER }}
           HOST: ${{ secrets.SSH_HOST }}
-          NEW_WEBSITE_FOLDER: "C:/inetpub/wwwroot/Site/Id${{ github.run_id }}Attempt${{ github.run_attempt }}"
-          NEW_WEBSITE_FOLDER_WIN: "C:\\inetpub\\wwwroot\\Site\\Id${{ github.run_id }}Attempt${{ github.run_attempt }}"
+          WEBSITE_VERSION: "Id${{ github.run_id }}Attempt${{ github.run_attempt }}"
+          WEBSITE_FOLDER: "C:/inetpub/wwwroot/Site/${{ env.WEBSITE_VERSION }}"
+          WEBSITE_FOLDER_WIN: "C:\\inetpub\\wwwroot\\Site\\${{ env.WEBSITE_VERSION }}"
         run: |
           ssh "$USERNAME@$HOST" "powershell -Command \"
-            if (-not (Test-Path -Path '$NEW_WEBSITE_FOLDER')) { 
-              New-Item -Path '$NEW_WEBSITE_FOLDER' -ItemType Directory; 
+            if (-not (Test-Path -Path '$NEW_WEBSITE_FOLDER_WIN')) { 
+              New-Item -Path '$NEW_WEBSITE_FOLDER_WIN' -ItemType Directory; 
             };
           \""
 
@@ -62,7 +63,7 @@ jobs:
             "$USERNAME@$HOST:'$NEW_WEBSITE_FOLDER'"
 
           ssh "$USERNAME@$HOST" "powershell -Command \"
-            Set-ItemProperty 'IIS:\\Sites\\Site' -name physicalPath -value '$NEW_WEBSITE_FOLDER_WIN'; 
             Stop-WebSite -Name 'Site'; 
+            Set-ItemProperty 'IIS:\\Sites\\Site' -name physicalPath -value '$NEW_WEBSITE_FOLDER_WIN'; 
             Start-WebSite -Name 'Site';
           \""
