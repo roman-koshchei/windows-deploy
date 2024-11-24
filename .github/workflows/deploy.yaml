@@ -64,7 +64,7 @@ jobs:
             -r ./publish/* \
             "$USERNAME@$HOST:'$WEBSITE_FOLDER'"
 
-          ssh "$USERNAME@$HOST" "powershell -File '$WEBSITE_PARENT_FOLDER_WIN\\update.ps1'"
+          ssh "$USERNAME@$HOST" "powershell -File '$WEBSITE_PARENT_FOLDER_WIN\\update.ps1' -parentFolder '$WEBSITE_PARENT_FOLDER_WIN' -folder '$WEBSITE_FOLDER_WIN'"
 
           # ssh "$USERNAME@$HOST" "powershell -Command \"
           #   Stop-WebSite -Name 'Site'; 
