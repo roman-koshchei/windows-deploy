@@ -64,14 +64,7 @@ jobs:
             -r ./publish/* \
             "$USERNAME@$HOST:'$WEBSITE_FOLDER'"
 
-          ssh "$USERNAME@$HOST" "powershell -File '$WEBSITE_PARENT_FOLDER_WIN\\update.ps1' -parentFolder '$WEBSITE_PARENT_FOLDER_WIN' -folder '$WEBSITE_FOLDER_WIN'"
-
-          # ssh "$USERNAME@$HOST" "powershell -Command \"
-          #   Stop-WebSite -Name 'Site'; 
-          #   Set-ItemProperty 'IIS:\\Sites\\Site' -name physicalPath -value '$WEBSITE_FOLDER_WIN'; 
-          #   Start-WebSite -Name 'Site';
-
-          #   \$directories = Get-ChildItem -Path '$WEBSITE_PARENT_FOLDER_WIN' -Directory | Sort-Object CreationTime -Descending;
-          #   \$latestDirectories = \$directories | Select-Object -First 2;
-          #   \$directories | Where-Object { \$_ -notin \$latestDirectories } | Remove-Item -Recurse -Force;
-          # \""
+          ssh "$USERNAME@$HOST" "powershell -File '$WEBSITE_PARENT_FOLDER_WIN\\update.ps1' `
+            -parentFolder '$WEBSITE_PARENT_FOLDER_WIN' `
+            -folder '$WEBSITE_FOLDER_WIN'
+          "
