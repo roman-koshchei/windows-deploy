@@ -50,21 +50,15 @@ jobs:
           HOST: ${{ secrets.SSH_HOST }}
           WEBSITE_VERSION: "Id${{ github.run_id }}Attempt${{ github.run_attempt }}"
         run: |
-          WEBSITE_FOLDER="C:/inetpub/wwwroot/Site/$WEBSITE_VERSION"
-          WEBSITE_PARENT_FOLDER_WIN="C:\\inetpub\\wwwroot\\Site"
-          WEBSITE_FOLDER_WIN="$WEBSITE_PARENT_FOLDER_WIN\\$WEBSITE_VERSION"
+          PARENT_FOLDER_WIN="C:\\inetpub\\wwwroot\\Site"
+          FOLDER_WIN="$PARENT_FOLDER_WIN\\$WEBSITE_VERSION"
 
           ssh "$USERNAME@$HOST" "powershell -Command \"
-            if (-not (Test-Path -Path '$WEBSITE_FOLDER_WIN')) { 
-              New-Item -Path '$WEBSITE_FOLDER_WIN' -ItemType Directory; 
+            if (-not (Test-Path -Path '$FOLDER_WIN')) { 
+              New-Item -Path '$FOLDER_WIN' -ItemType Directory; 
             };
           \""
 
-          scp -C \
-            -r ./publish/* \
-            "$USERNAME@$HOST:'$WEBSITE_FOLDER'"
+          scp -C -r ./publish/* "$USERNAME@$HOST:'C:/inetpub/wwwroot/Site/$WEBSITE_VERSION'"
 
-          ssh "$USERNAME@$HOST" "powershell -File '$WEBSITE_PARENT_FOLDER_WIN\\update.ps1' `
-            -parentFolder '$WEBSITE_PARENT_FOLDER_WIN' `
-            -folder '$WEBSITE_FOLDER_WIN'
-          "
+          ssh "$USERNAME@$HOST" "powershell -File '$PARENT_FOLDER_WIN\\update.ps1' -parentFolder '$PARENT_FOLDER_WIN' -folder '$FOLDER_WIN'"
